@@ -1,0 +1,25 @@
+# vi: ft=gitconfig
+
+[user]
+	name = "Josh Cooper"
+	email = "josh@cooper.dev"
+
+[init]
+	defaultBranch = master
+
+[rebase]
+	updateRefs = true
+
+[rerere]
+	enabled = true
+	autoUpdate = true
+
+[fetch]
+	prune = true
+
+[pull]
+	ff = only
+
+[push]
+	default = simple
+	autoSetupRemote = true
