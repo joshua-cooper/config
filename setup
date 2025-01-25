@@ -1,0 +1,53 @@
+#!/bin/sh
+
+set -e
+
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+usage() {
+	printf "Usage:\n" >&2
+	printf "  %s [-i|-u] DIR [DIR...]\n\n" "$(basename "$0")" >&2
+	printf "Options:\n" >&2
+	printf "  -i  install config files\n" >&2
+	printf "  -u  uninstall config files\n" >&2
+	exit 1
+}
+
+[ $# -gt 1 ] || usage
+
+case "$1" in
+	-i) export MODE=install ;;
+	-u) export MODE=uninstall ;;
+	*) usage ;;
+esac
+
+shift
+
+for dir do
+	if [ ! -d "$dir" ]; then
+		printf "Error: '%s' is not a directory\n" "$dir" >&2
+		exit 1
+	fi
+done
+
+find "$@" -type f -exec sh -c '
+	for file do
+		source="$PWD/$file"
+		target="$XDG_CONFIG_HOME/$file"
+
+		case "$MODE" in
+			install)
+				if [ "$(readlink "$target")" != "$source" ]; then
+					mkdir -p "$(dirname "$target")"
+					ln -vis "$source" "$target"
+				fi
+				;;
+			uninstall)
+				if [ "$(readlink "$target")" = "$source" ]; then
+					rm -v "$target"
+					rmdir -p "$(dirname "$target")" 2>/dev/null || true
+				fi
+				;;
+		esac
+	done
+' _ {} +
