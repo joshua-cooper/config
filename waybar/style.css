@@ -1,0 +1,44 @@
+window#waybar {
+	background: #000;
+}
+
+#workspaces {
+	margin-left: 6px;
+}
+
+#workspaces button {
+	all: initial;
+	color: #c5c9c5;
+	margin: 6px 0px 6px 0px;
+	padding: 2px 12px;
+	border: 1px solid #000;
+	border-radius: 6px;
+}
+
+#workspaces button.focused {
+	color: #d4be98;
+	background-color: #181616;
+	border-color: #434a4c;
+}
+
+#workspaces button.urgent {
+	color: #c4746e;
+}
+
+#clock,
+#battery,
+#wireplumber,
+#network,
+#tray {
+	margin: 6px 6px 6px 0px;
+	padding: 2px 8px;
+	color: #c5c9c5;
+	background-color: #181616;
+	border: 1px solid #434a4c;
+	border-radius: 6px;
+}
+
+#battery.warning:not(.charging),
+#battery.critical:not(.charging) {
+	color: #c4746e;
+}
