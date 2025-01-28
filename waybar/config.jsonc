@@ -1,0 +1,46 @@
+{
+	"layer": "top",
+
+	"modules-left": [
+		"niri/workspaces"
+	],
+
+	"modules-right": [
+		"tray",
+		"network",
+		"wireplumber",
+		"battery",
+		"clock"
+	],
+
+	"clock": {
+		"format": "{:%H:%M}",
+		"tooltip": false
+	},
+
+	"battery": {
+		"format": "Battery {capacity}%",
+		"format-charging": "Charging {capacity}%",
+		"interval": 5,
+		"states": {
+			"warning": 20,
+			"critical": 10
+		},
+		"tooltip": false
+	},
+
+	"network": {
+		"format-wifi" : "{essid}",
+		"format-ethernet": "Ethernet",
+		"format-disconnected": "No Network",
+		"tooltip": false
+	},
+
+	"wireplumber": {
+		"max-volume": 100,
+		"format": "Volume {volume}%",
+		"format-muted": "Muted {volume}%",
+		"on-click": "wpctl set-mute  @DEFAULT_AUDIO_SINK@ toggle",
+		"tooltip": false
+	}
+}
