@@ -12,6 +12,7 @@ return {
 			})
 
 			-- TODO: keymaps
+			-- TODO: folds aren't working?
 		end,
 	},
 }
