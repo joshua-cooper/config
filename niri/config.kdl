@@ -9,6 +9,7 @@
 	- screenshot window keybind?
 	- keybinds to stack windows into/out of columns
 	- workspaces?
+	- move floating windows between workspaces
 */
 
 prefer-no-csd
