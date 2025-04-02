@@ -1,0 +1,4 @@
+# vi: ft=gitignore
+
+.aider.*
+**/.claude/settings.local.json
