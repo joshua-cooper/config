@@ -1,0 +1,15 @@
+{
+	"diagnostics": {
+		"globals": ["vim"]
+	},
+	"workspace": {
+		"library": [
+			"$VIMRUNTIME",
+			"$XDG_DATA_HOME/nvim/site/pack/paqs",
+			"$HOME/.local/share/nvim/site/pack/paqs"
+		]
+	},
+	"runtime": {
+		"version": "LuaJIT"
+	}
+}
