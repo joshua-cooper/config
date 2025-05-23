@@ -1,0 +1,113 @@
+#!/bin/sh
+
+set -eu
+
+DATABASE_DIR=${XDG_DATA_HOME:-"$HOME/.local/share"}/tmux-projects
+DATABASE_FILE=$DATABASE_DIR/database
+
+main() {
+	init_database
+	cmd="${1:-help}"
+	[ $# -gt 0 ] && shift
+
+	case "$cmd" in
+		help) cmd_usage ;;
+		add) cmd_add "$@" ;;
+		list) cmd_list ;;
+		open) cmd_open ;;
+		edit) cmd_edit ;;
+		*) die "Error: Unknown command '$cmd'" ;;
+	esac
+}
+
+die() {
+	printf '%s\n' "$*" >&2
+	exit 1
+}
+
+init_database() {
+	mkdir -p "$DATABASE_DIR"
+	touch "$DATABASE_FILE"
+}
+
+picker() {
+	fzf \
+		--layout reverse \
+		--tmux bottom,100%,30%,border-native
+}
+
+# Prints usage info for this script.
+cmd_usage() {
+	cat <<EOF
+tmux-projects - Manage tmux project sessions
+
+Usage:
+  tmux-projects <command> [arguments]
+
+Commands:
+  add [path...]  Add one or more project paths to the database (default: current directory)
+  list           List all projects in the database
+  open           Open a project from the database in a tmux session
+  edit           Open the project database in the default editor
+  help           Show this help message
+EOF
+}
+
+# Adds paths to the database.
+cmd_add() {
+	if [ $# -eq 0 ]; then
+		set -- "$PWD"
+	fi
+
+	for path in "$@"; do
+		if [ -d "$path" ]; then
+			path=$(cd "$path" && printf '%s' "$PWD")
+		else
+			die "Error: '$path' is not a directory"
+		fi
+
+		display_path="${path#"$HOME"/}"
+		if [ "$display_path" != "$path" ]; then
+			# shellcheck disable=SC2088
+			# We want literal ~ for display, not expansion.
+			display_path="~/$display_path"
+		fi
+
+		if ! grep -Fxq "$display_path" "$DATABASE_FILE"; then
+			printf '%s\n' "$display_path" >> "$DATABASE_FILE"
+		fi
+	done
+}
+
+# Prints all paths in the database.
+cmd_list() {
+	cat "$DATABASE_FILE"
+}
+
+# Opens a path from the database in a tmux session.
+cmd_open() {
+	display_dir=$(picker < "$DATABASE_FILE")
+	session=$(printf '%s\n' "$display_dir" | tr '=:.' '___')
+
+	case "$display_dir" in
+		\~/*) dir="$HOME/${display_dir#\~/}" ;;
+		*) dir="$display_dir" ;;
+	esac
+
+	if ! tmux has-session -t "=$session" 2>/dev/null; then
+		tmux new-session -d -s "$session" -c "$dir"
+	fi
+
+	if [ -n "${TMUX:-}" ]; then
+		tmux switch-client -t "$session"
+	else
+		tmux attach-session -t "$session"
+	fi
+}
+
+# Opens the database file in the default editor.
+cmd_edit() {
+	${EDITOR:-vi} "$DATABASE_FILE"
+}
+
+main "$@"
